@@ -64,3 +64,4 @@ nbdist/
 
 ### VSCode
 .vscode
+/src/main/resources/rebel.xml

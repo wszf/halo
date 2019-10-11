@@ -23,6 +23,7 @@ import run.halo.app.model.vo.PostListVO;
 import run.halo.app.service.*;
 import run.halo.app.utils.MarkdownUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -113,15 +114,17 @@ public class ContentArchiveController {
      * @param model   model
      * @return template path: themes/{theme}/post.ftl
      */
-    @GetMapping("{url}")
-    public String post(@PathVariable("url") String url,
-                       @RequestParam(value = "preview", required = false, defaultValue = "false") boolean preview,
+    @GetMapping("**")
+    public String post(@RequestParam(value = "preview", required = false, defaultValue = "false") boolean preview,
                        @RequestParam(value = "intimate", required = false, defaultValue = "false") boolean intimate,
                        @RequestParam(value = "token", required = false) String token,
                        @RequestParam(value = "cp", defaultValue = "1") Integer cp,
                        @SortDefault(sort = "createTime", direction = DESC) Sort sort,
+                       HttpServletRequest request,
                        Model model) {
         Post post;
+        String url = getFormatURI(request.getRequestURI(), false);
+        System.out.println(request.getRequestURI() + "===============" + url);
         if (preview) {
             post = postService.getBy(PostStatus.DRAFT, url);
         } else if (intimate) {
@@ -174,9 +177,10 @@ public class ContentArchiveController {
         return themeService.render("post");
     }
 
-    @GetMapping(value = "{url}/password")
-    public String password(@PathVariable("url") String url,
+    @GetMapping(value = "**/password")
+    public String password(HttpServletRequest request,
                            Model model) {
+        String url = getFormatURI(request.getRequestURI(), false);
         Post post = postService.getBy(PostStatus.INTIMATE, url);
         if (null == post) {
             throw new ForbiddenException("没有查询到该文章信息");
@@ -186,10 +190,11 @@ public class ContentArchiveController {
         return "common/template/post_password";
     }
 
-    @PostMapping(value = "{url}/password")
+    @PostMapping(value = "**/password")
     @CacheLock
-    public String password(@PathVariable("url") String url,
+    public String password(HttpServletRequest request,
                            @RequestParam(value = "password") String password) {
+        String url = getFormatURI(request.getRequestURI(), false);
         Post post = postService.getBy(PostStatus.INTIMATE, url);
         if (null == post) {
             throw new ForbiddenException("没有查询到该文章信息");
@@ -205,5 +210,13 @@ public class ContentArchiveController {
             String redirect = String.format("%s/archives/%s/password", optionService.getBlogBaseUrl(), post.getUrl());
             return "redirect:" + redirect;
         }
+    }
+
+    public String getFormatURI(String uri, boolean isPwd) {
+        String result = uri.replace("/archives/", "");
+        if (isPwd) {
+            result = result.replace("/password", "");
+        }
+        return result;
     }
 }

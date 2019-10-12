@@ -25,6 +25,8 @@ import run.halo.app.utils.MarkdownUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -217,6 +219,6 @@ public class ContentArchiveController {
         if (isPwd) {
             result = result.replace("/password", "");
         }
-        return result;
+        return URLDecoder.decode(result);
     }
 }

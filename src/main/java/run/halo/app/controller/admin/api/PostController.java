@@ -137,6 +137,7 @@ public class PostController {
         postService.removeById(postId);
     }
 
+
     @GetMapping("preview/{postId:\\d+}")
     public String preview(@PathVariable("postId") Integer postId) {
         Post post = postService.getById(postId);

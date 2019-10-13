@@ -7,6 +7,7 @@ import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.Post;
 import run.halo.app.model.enums.PostCreateFrom;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.utils.HaloUtils;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -62,7 +63,7 @@ public class PostParam implements InputConverter<Post> {
     @Override
     public Post convertTo() {
         if (StringUtils.isBlank(url)) {
-            url = title.replace(".","");
+            url = HaloUtils.generateUrl();
         }
         if (null == thumbnail) {
             thumbnail = "";

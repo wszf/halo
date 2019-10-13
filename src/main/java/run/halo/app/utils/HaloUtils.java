@@ -8,6 +8,8 @@ import org.springframework.util.Assert;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import static run.halo.app.model.support.HaloConst.FILE_SEPARATOR;
@@ -203,5 +205,16 @@ public class HaloUtils {
      */
     public static String cleanHtmlTag(String content) {
         return content.replaceAll(RE_HTML_MARK, "");
+    }
+
+    /**
+     * generate achives url
+     * @return url
+     */
+    public static String generateUrl() {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd/HHmmssSSS");
+        System.out.println(dateFormat.format(date) + ".html");
+        return dateFormat.format(date) + ".html";
     }
 }

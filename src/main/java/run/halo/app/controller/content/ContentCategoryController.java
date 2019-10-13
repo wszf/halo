@@ -17,6 +17,9 @@ import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.vo.PostListVO;
 import run.halo.app.service.*;
 
+import java.net.URLEncoder;
+import java.util.Locale;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
@@ -87,6 +90,7 @@ public class ContentCategoryController {
                              @PathVariable("slugName") String slugName,
                              @PathVariable("page") Integer page,
                              @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
+        slugName = URLEncoder.encode(slugName).toLowerCase(Locale.ENGLISH);
         // Get category by slug name
         final Category category = categoryService.getBySlugNameOfNonNull(slugName);
 

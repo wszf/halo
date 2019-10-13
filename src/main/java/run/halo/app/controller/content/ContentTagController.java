@@ -18,6 +18,7 @@ import run.halo.app.model.vo.PostListVO;
 import run.halo.app.service.*;
 
 import java.net.URLEncoder;
+import java.util.Locale;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -90,7 +91,7 @@ public class ContentTagController {
                        @PathVariable("slugName") String slugName,
                        @PathVariable("page") Integer page,
                        @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
-        slugName = URLEncoder.encode(slugName);
+        slugName = URLEncoder.encode(slugName).toLowerCase(Locale.ENGLISH);
         // Get tag by slug name
         final Tag tag = tagService.getBySlugNameOfNonNull(slugName);
 

@@ -4,6 +4,7 @@ import lombok.Data;
 import run.halo.app.model.dto.base.OutputConverter;
 import run.halo.app.model.entity.Tag;
 
+import java.net.URLDecoder;
 import java.util.Date;
 
 /**
@@ -27,4 +28,9 @@ public class TagDTO implements OutputConverter<TagDTO, Tag> {
     private Date createTime;
 
     private String fullPath;
+
+    public String getSlug() {
+        return URLDecoder.decode(slug);
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.ToString;
 import run.halo.app.model.dto.base.OutputConverter;
 import run.halo.app.model.entity.Category;
 
+import java.net.URLDecoder;
 import java.util.Date;
 
 /**
@@ -35,4 +36,7 @@ public class CategoryDTO implements OutputConverter<CategoryDTO, Category> {
     private Date createTime;
 
     private String fullPath;
+    public String getSlug() {
+        return URLDecoder.decode(slug);
+    }
 }

@@ -9,7 +9,7 @@ import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.enums.PostEditorType;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.utils.SlugUtils;
-
+import run.halo.app.utils.HaloUtils;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -71,8 +71,11 @@ public class PostParam implements InputConverter<Post> {
 
     @Override
     public Post convertTo() {
-        slug = StringUtils.isBlank(slug) ? SlugUtils.slug(title) : SlugUtils.slug(slug);
+        //slug = StringUtils.isBlank(slug) ? SlugUtils.slug(title) : SlugUtils.slug(slug);
 
+        if (StringUtils.isBlank(slug)) {
+            slug = HaloUtils.generateUrl();
+        }
         if (null == thumbnail) {
             thumbnail = "";
         }

@@ -17,7 +17,9 @@ import run.halo.app.model.enums.PostStatus;
 import run.halo.app.service.OptionService;
 import run.halo.app.service.PostService;
 import run.halo.app.service.SheetService;
+import run.halo.app.service.ThemeService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -49,7 +51,7 @@ public class ContentContentController {
     private final OptionService optionService;
 
     private final PostService postService;
-
+    private final ThemeService themeService;
     private final SheetService sheetService;
 
     private final AbstractStringCacheStore cacheStore;
@@ -63,7 +65,7 @@ public class ContentContentController {
                                     LinkModel linkModel,
                                     OptionService optionService,
                                     PostService postService,
-                                    SheetService sheetService,
+                                    ThemeService themeService, SheetService sheetService,
                                     AbstractStringCacheStore cacheStore) {
         this.postModel = postModel;
         this.sheetModel = sheetModel;
@@ -74,6 +76,7 @@ public class ContentContentController {
         this.linkModel = linkModel;
         this.optionService = optionService;
         this.postService = postService;
+        this.themeService = themeService;
         this.sheetService = sheetService;
         this.cacheStore = cacheStore;
     }
@@ -117,13 +120,13 @@ public class ContentContentController {
         }
     }
 
-    @GetMapping("{prefix}/{slug}")
+    @GetMapping("{prefix}/**")
     public String content(@PathVariable("prefix") String prefix,
-                          @PathVariable("slug") String slug,
+                          HttpServletRequest request,
                           @RequestParam(value = "token", required = false) String token,
                           Model model) {
+        String slug = getFormatURI(request.getRequestURI(), prefix, false);
         PostPermalinkType postPermalinkType = optionService.getPostPermalinkType();
-
         if (postPermalinkType.equals(PostPermalinkType.DEFAULT) && optionService.getArchivesPrefix().equals(prefix)) {
             Post post = postService.getBySlug(slug);
             return postModel.content(post, token, model);
@@ -134,9 +137,11 @@ public class ContentContentController {
             return categoryModel.listPost(model, slug, 1);
         } else if (optionService.getTagsPrefix().equals(prefix)) {
             return tagModel.listPost(model, slug, 1);
-        } else {
-            throw new NotFoundException("Not Found");
         }
+//        else {
+//            throw new NotFoundException("Not Found");
+//        }
+        return themeService.render("post");
     }
 
     @GetMapping("{prefix}/{slug}/page/{page:\\d+}")
@@ -208,13 +213,21 @@ public class ContentContentController {
 
             if (optionService.getPostPermalinkType().equals(PostPermalinkType.ID)) {
                 redirectUrl.append("&token=")
-                    .append(token);
+                        .append(token);
             } else {
                 redirectUrl.append("?token=")
-                    .append(token);
+                        .append(token);
             }
         }
 
         return "redirect:" + redirectUrl;
+    }
+
+    public String getFormatURI(String uri, String prefix, boolean isPwd) {
+        String result = uri.replace(String.format("/%s/", prefix), "");
+        if (isPwd) {
+            result = result.replace("/password", "");
+        }
+        return result;
     }
 }
